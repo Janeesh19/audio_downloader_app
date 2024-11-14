@@ -69,13 +69,15 @@ if st.button("Upload File"):
     else:
         st.error("Please select a file and enter a category.")
 
-# Dropdown to select category
+# Dropdown to select category for downloading files
 st.header("Select Category to Download Files")
-categories = get_categories()
+categories = ["Choose a category"] + get_categories()  # Add placeholder as the first option
 
-if categories:
-    selected_category = st.selectbox("Choose a category", categories)
-    
+selected_category = st.selectbox("Choose a category", categories)
+
+if selected_category == "Choose a category":
+    st.write("Please select a category to view files available for download.")
+else:
     # Display files in the selected category with metadata
     files = get_files_by_category(selected_category)
     
@@ -100,5 +102,3 @@ if categories:
                 )
     else:
         st.write("No files in this category.")
-else:
-    st.write("No categories available. Please add files to the audio folder.")

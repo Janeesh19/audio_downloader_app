@@ -1,10 +1,10 @@
 import streamlit as st
 import os
-from tinytag import TinyTag  # Lightweight library to get audio metadata
+import audio_metadata  # Lightweight library to get audio metadata
 
 # Define the main folder where audio files are stored
 AUDIO_FOLDER = "audio_files"
-os.makedirs(AUDIO_FOLDER, exist_ok=True)  # Ensure the folder exists
+os.makedirs(AUDIO_FOLDER, exist_ok=True)   # Ensure the folder exists
 
 # Initialize session state for uploaded files
 if 'uploaded_files' not in st.session_state:
@@ -27,8 +27,8 @@ def save_uploaded_file(uploaded_file, category):
 
 # Function to get audio metadata (duration and size) using TinyTag
 def get_audio_metadata(file_path):
-    tag = TinyTag.get(file_path)
-    duration_seconds = tag.duration  # Duration in seconds
+    metadata = audio_metadata.load(file_path)
+    duration_seconds = metadata.streaminfo['duration']
     size = os.path.getsize(file_path)  # Size in bytes
 
     # Convert duration to minutes and seconds
@@ -37,7 +37,6 @@ def get_audio_metadata(file_path):
     formatted_duration = f"{minutes}:{seconds:02d}"  # Format as MM:SS
 
     return formatted_duration, size
-
 # Function to get files in a specific category and their metadata
 def get_files_by_category(category):
     category_folder = os.path.join(AUDIO_FOLDER, category)

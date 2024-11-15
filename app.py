@@ -1,10 +1,9 @@
 import streamlit as st
 import os
-import audio_metadata  # Lightweight library to get audio metadata
 
 # Define the main folder where audio files are stored
 AUDIO_FOLDER = "audio_files"
-os.makedirs(AUDIO_FOLDER, exist_ok=True)   # Ensure the folder exists
+os.makedirs(AUDIO_FOLDER, exist_ok=True)  # Ensure the folder exists
 
 # Initialize session state for uploaded files
 if 'uploaded_files' not in st.session_state:
@@ -25,27 +24,11 @@ def save_uploaded_file(uploaded_file, category):
     st.session_state['uploaded_files'].append(file_path)
     return file_path
 
-# Function to get audio metadata (duration and size) using TinyTag
-def get_audio_metadata(file_path):
-    metadata = audio_metadata.load(file_path)
-    duration_seconds = metadata.streaminfo['duration']
-    size = os.path.getsize(file_path)  # Size in bytes
-
-    # Convert duration to minutes and seconds
-    minutes = int(duration_seconds // 60)
-    seconds = int(duration_seconds % 60)
-    formatted_duration = f"{minutes}:{seconds:02d}"  # Format as MM:SS
-
-    return formatted_duration, size
-# Function to get files in a specific category and their metadata
+# Function to get files in a specific category
 def get_files_by_category(category):
     category_folder = os.path.join(AUDIO_FOLDER, category)
     if os.path.exists(category_folder):
-        files = []
-        for file_name in os.listdir(category_folder):
-            file_path = os.path.join(category_folder, file_name)
-            duration, size = get_audio_metadata(file_path)
-            files.append((file_name, duration, size, file_path))
+        files = [(file_name, os.path.join(category_folder, file_name)) for file_name in os.listdir(category_folder)]
         return files
     return []
 
@@ -90,16 +73,16 @@ selected_category = st.selectbox("Choose a category", categories)
 if selected_category == "Choose a category":
     st.write("Please select a category to view files available for download or deletion.")
 else:
-    # Display files in the selected category with metadata and delete options
+    # Display files in the selected category with download and delete options
     files = get_files_by_category(selected_category)
     
     if files:
         st.subheader(f"Files in '{selected_category}' category:")
         
         # Provide download links and delete buttons for each file in the category
-        for file_name, duration, size, file_path in files:
-            # Display file name, duration, and size
-            st.write(f"**{file_name}** - Duration: {duration} minutes, Size: {size / 1024:.2f} KB")
+        for file_name, file_path in files:
+            # Display file name
+            st.write(f"**{file_name}**")
             
             # Columns for download and delete buttons
             col1, col2 = st.columns(2)
